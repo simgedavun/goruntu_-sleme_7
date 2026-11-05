@@ -1,0 +1,39 @@
+IKI SINYALIN VE TOPLAMLARININ DFT ANALIZI - YORUM
+
+Sinyaller N = 256 ornek ve fs = 256 Hz ornekleme frekansi ile 1 saniye
+boyunca uretildi. fs = N secildigi icin k. harmonik dogrudan k Hz'e
+karsilik geliyor. Ornekleme frekansi, en yuksek frekansin (50 Hz) iki
+katindan buyuk oldugu icin Nyquist kosulu saglaniyor. Her iki sinyale de
+0.3 oraninda gurultu eklendi. Zaman grafiklerinde okunabilirlik icin
+sadece ilk 0.25 saniye gosterildi.
+
+Sinyal 1 (f = 50 Hz, A = 12):
+Harmonik vektorunde k = 50'de buyuk bir tepe var (|X[50]| = 1562).
+Ikinci tepe k = 206 = 256 - 50'de, bu gercel sinyallerin DFT'sindeki
+simetriden kaynaklanan ayna bilesen. Genlik, 2*|X[k]|/N formulu ile
+2*1562/256 = 12.2 olarak geri hesaplanabiliyor, gercek degere (12) cok
+yakin.
+
+Sinyal 2 (f = 30 Hz, A = 5):
+Tepe k = 30'da (|X[30]| = 654) ve aynasi k = 226 = 256 - 30'da. Genlik
+tahmini 2*654/256 = 5.1. Genlik daha kucuk oldugu icin tepe de Sinyal
+1'dekinden daha kisa.
+
+Her iki sinyalde de tepeler disinda kalan butun harmoniklerde kucuk
+degerler var. Bunlar eklenen gurultuden kaynaklaniyor. Gurultu tek bir
+frekansta toplanmadigi icin butun harmoniklere yayiliyor.
+
+Toplam Sinyal:
+Zaman uzayinda toplam sinyalin sekli karmasik; iki sinusun ve gurultunun
+ust uste binmesi nedeniyle frekanslari gozle ayirt etmek zor. Ancak
+harmonik vektorunde iki frekans acikca ayri ayri gorunuyor: k = 30'da
+(yaklasik 630) ve k = 50'de (1562), ayrica aynalari k = 226 ve k = 206'da.
+Tepelerin yukseklikleri, sinyallerin tek tek analizinde elde edilen
+degerlerle neredeyse ayni.
+
+Bu sonuc DFT'nin dogrusal olmasindan kaynaklaniyor:
+    DFT(x1 + x2) = DFT(x1) + DFT(x2)
+Yani toplam sinyalin harmonik vektoru, iki sinyalin harmonik
+vektorlerinin toplamina esittir. Boylece birden fazla frekanstan olusan
+bir sinyalin hangi frekanslari hangi genliklerle icerdigi DFT ile
+kolayca bulunabilir.

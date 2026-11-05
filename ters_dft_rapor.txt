@@ -1,0 +1,151 @@
+TERS DFT ILE GORUNTU YENIDEN URETME VE BENZERLIK METRIKLERI - RAPOR
+
+1. YONTEM
+---------
+Onceki odevde Gauss (kuvvet = 0.1) ve Salt & Pepper (oran = 0.05)
+gurultusu eklenen 128 x 128 gri tonlu resimler kullanildi. Ters 2
+boyutlu DFT su formul ile yazildi:
+
+    f[x, y] = (1/MN) * sum_u sum_v  X[u, v] * e^(+j*2*pi*(u*x/M + v*y/N))
+
+Iki deneme yapildi:
+
+a) Filtresiz ters DFT: Gurultulu resmin harmonik matrisi hic
+   degistirilmeden ters DFT'den gecirildi.
+
+b) Alcak geciren filtre + ters DFT: Harmonik matrisi Gauss alcak
+   geciren filtre ile carpildi, sonra ters DFT alindi:
+       H(u, v) = e^(-D^2 / (2 * D0^2))
+   Burada D, harmonigin merkeze (sifir frekansa) uzakligi. Bu filtre
+   dusuk frekanslari (resmin asil bilgisi) korurken, gurultunun yogun
+   oldugu yuksek frekanslari zayiflatir. D0 icin 10, 20, 30, 40 ve 60
+   denendi ve ZNCC'ye gore en iyi deger secildi.
+
+
+2. ZNCC (Zero Mean Normalized Cross Correlation)
+-----------------------------------------------
+    ZNCC = sum( (a - ort(a)) * (b - ort(b)) ) /
+           sqrt( sum( (a - ort(a))^2 ) * sum( (b - ort(b))^2 ) )
+
+Iki resimden once kendi ortalamalari cikarilir, sonra normalize edilmis
+korelasyon hesaplanir. Sonuc -1 ile 1 arasindadir: 1 iki resmin tamamen
+benzer, 0 iliskisiz, -1 ters (negatif) oldugunu gosterir.
+
+
+3. SONUCLAR
+-----------
+Gauss gurultu:
+    Resim                        ZNCC     MSE      MAE      PSNR(dB)  SSIM
+    Gurultulu                    0.8989   0.0095   0.0776   20.23     0.485
+    Filtresiz ters DFT           0.8989   0.0095   0.0776   20.23     0.485
+    Alcak geciren (D0 = 20)      0.9678   0.0026   0.0361   25.87     0.738
+
+Salt & Pepper:
+    Resim                        ZNCC     MSE      MAE      PSNR(dB)  SSIM
+    Gurultulu                    0.8491   0.0143   0.0243   18.46     0.453
+    Filtresiz ters DFT           0.8491   0.0143   0.0243   18.46     0.453
+    Alcak geciren (D0 = 20)      0.9625   0.0031   0.0380   25.09     0.699
+
+Yorum:
+Filtresiz ters DFT, gurultulu resmin birebir aynisini uretti; butun
+metrikler degismedi. Bunun sebebi DFT'nin kayipsiz bir donusum olmasi:
+harmonik matrisinde hicbir degisiklik yapilmazsa ters DFT ayni resmi
+geri verir ve gurultu de aynen geri gelir. Yani sadece ters DFT almak
+gurultuyu temizlemez, harmonik matrisi uzerinde filtreleme yapmak
+gerekir.
+
+Alcak geciren filtre uygulandiginda iki gurultu turunde de ZNCC
+0.96'nin ustune cikti. Gurultu buyuk olcude temizlendi, ancak resim bir
+miktar bulaniklasti, cunku resmin kenar ve doku gibi ince detaylari da
+yuksek frekanslarda yer aliyor ve filtre bunlari da zayiflatiyor.
+D0 = 10 resmi fazla bulaniklastirdi, D0 = 60 ise gurultuyu yeterince
+temizlemedi. En iyi denge D0 = 20'de elde edildi.
+
+Salt & Pepper gurultusu icin alcak geciren filtre, Gauss gurultusune
+gore biraz daha az basarili oldu. Siyah ve beyaz noktalar tamamen
+silinmedi, cevrelerine yayilarak soluk lekelere donustu. Bu tur gurultu
+icin Medyan filtre daha uygundur.
+
+Dikkat ceken bir sonuc: Salt & Pepper resminde filtreleme sonrasi ZNCC,
+MSE, PSNR ve SSIM iyilesirken MAE kotulesti (0.0243 -> 0.0380). Bunun
+sebebi, gurultulu resimde piksellerin sadece %5'inin bozuk olmasi; bu
+piksellerdeki hata cok buyuk ama sayilari az. Filtre ise bu buyuk
+hatalari azaltirken bulaniklastirma ile butun piksellere kucuk hatalar
+ekliyor. MSE buyuk hatalari kare aldigi icin agir cezalandirir, MAE ise
+butun hatalara esit agirlik verir. Bu ornek, tek bir metrige bakmanin
+yaniltici olabilecegini ve metrik seciminin onemini gosteriyor.
+
+
+4. PIKSEL BENZERLIGINI OLCEN METRIKLER
+--------------------------------------
+a) MAE (Mean Absolute Error - Ortalama Mutlak Hata)
+       MAE = ort( |a - b| )
+   + Hesaplamasi cok basit, sonuc piksel degeriyle ayni birimde,
+     yorumlamasi kolay.
+   + Buyuk hatalara asiri tepki vermez (aykiri degerlere dayanikli).
+   - Hatanin resmin neresinde ve nasil dagildigini dikkate almaz.
+   - Parlaklik veya kontrast degisimine karsi hassastir.
+
+b) MSE (Mean Squared Error - Ortalama Kare Hata) ve RMSE
+       MSE = ort( (a - b)^2 ),   RMSE = sqrt(MSE)
+   + En yaygin kullanilan metrik, matematiksel olarak kolay islenir.
+   + Buyuk hatalari daha agir cezalandirir.
+   - Aykiri degerlere (or. Salt & Pepper) asiri duyarlidir.
+   - Insan gozunun algisiyla her zaman uyusmaz: farkli bozulmalar ayni
+     MSE'yi verip gozle cok farkli gorunebilir.
+   - Parlaklik/kontrast degisimine hassastir.
+
+c) PSNR (Peak Signal-to-Noise Ratio)
+       PSNR = 10 * log10( MAX^2 / MSE )   (MAX = 1 veya 255)
+   + Desibel cinsinden, goruntu sikistirma ve gurultu temizlemede
+     standart olarak kullanilir, karsilastirmasi kolay.
+   + Logaritmik oldugu icin genis bir hata araligini rahat gosterir.
+   - MSE'den turetildigi icin onun butun dezavantajlarini tasir.
+   - Iki resim ayni ise sonsuz cikar.
+
+d) NCC (Normalized Cross Correlation)
+       NCC = sum(a * b) / sqrt( sum(a^2) * sum(b^2) )
+   + Kontrast (carpimsal) degisimlerinden etkilenmez.
+   - Ortalama cikarilmadigi icin parlaklik kaymasindan etkilenir.
+
+e) ZNCC (Zero Mean Normalized Cross Correlation)
+   + Ortalama cikarilip normalize edildigi icin hem parlaklik hem de
+     kontrast degisimlerinden etkilenmez. Resim sadece daha parlak veya
+     daha kontrastli olsa bile ZNCC = 1 cikar.
+   + Sonuc -1 ile 1 arasinda, resim boyutundan bagimsiz; farkli
+     resimleri karsilastirmak kolay.
+   + Sablon eslestirme (template matching) ve stereo goruntulemede
+     yaygin olarak kullanilir.
+   - Hesaplamasi MSE ve MAE'ye gore daha agir.
+   - Tamamen duz (varyansi sifir) bolgelerde payda sifir olur,
+     tanimsizdir.
+   - Parlaklik farkini hata olarak gormedigi icin, parlakligin onemli
+     oldugu durumlarda yaniltici olabilir.
+
+f) SSIM (Structural Similarity Index)
+       SSIM = ((2*mx*my + C1)(2*cov + C2)) /
+              ((mx^2 + my^2 + C1)(vx + vy + C2))
+   Resim kucuk pencerelere bolunur, her pencerede parlaklik, kontrast ve
+   yapi benzerligi olculur ve ortalamasi alinir.
+   + Insan gozunun algisina en yakin metrik; bulaniklasma gibi yapisal
+     bozulmalari diger metriklerden daha iyi yakalar.
+   + Sonuc -1 ile 1 arasinda.
+   - Hesaplamasi en karmasik olanidir.
+   - Pencere boyutu ve sabitler (C1, C2) gibi parametrelere baglidir.
+   - Resimler arasinda kayma veya donme varsa basarisi duser.
+
+
+5. SONUC
+--------
+Sadece ters DFT almak resmi oldugu gibi geri getirir; gurultuyu
+temizlemek icin harmonik matrisi uzerinde filtreleme yapmak gerekir.
+Gauss alcak geciren filtre iki gurultu turunde de benzerligi belirgin
+sekilde artirdi (ZNCC 0.85-0.90'dan 0.96'ya cikti), ancak resmi bir
+miktar bulaniklastirdi.
+
+Metrikler arasinda tek bir "en iyi" yoktur. MAE ve MSE basit ve
+hizlidir, PSNR sikistirma calismalarinda standarttir, ZNCC parlaklik ve
+kontrast farklarindan etkilenmeden yapisal benzerligi olcer, SSIM ise
+insan algisina en yakin sonucu verir. Salt & Pepper ornegindeki MAE
+sonucunda goruldugu gibi metrikler farkli sonuclar verebildigi icin
+birden fazla metrik birlikte kullanilmalidir.

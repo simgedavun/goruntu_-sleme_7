@@ -1,0 +1,19 @@
+DFT SONUCLARININ YORUMU
+
+Gurultusuz Sinyal:
+Harmonik vektorunde sadece k = 3 ve k = 61'de deger var, diger butun
+harmonikler sifir. Bunun sebebi sinyalin tek bir frekanstan (3 Hz)
+olusmasi. 64 ornek 1 saniyeye karsilik geldigi icin 3 Hz, k = 3.
+harmonige denk geliyor. k = 61 = N - 3'teki tepe, gercel sinyallerin
+DFT'sinin simetrik olmasindan kaynaklaniyor. Bu tepe ayni frekansin
+aynasi, yani negatif frekans bileseni. Tepenin yuksekligi
+A*N/2 = 2*64/2 = 64. Bu degerden sinyalin genligi geri hesaplanabilir.
+
+Gurultulu Sinyal:
+k = 3 ve k = 61'deki tepeler yine acikca goruluyor (yaklasik 65), yani
+sinus bileseni kaybolmamis. Ancak diger butun harmoniklerde de 0 ile 13
+arasinda rastgele kucuk degerler olusmus. Gurultu tek bir frekansta
+toplanmiyor, butun frekanslara yayiliyor. Zaman uzayinda sinyalin sekli
+bozulmus olsa da frekans uzayinda sinus bileseni gurultuden kolayca
+ayirt edilebiliyor. Bu yuzden DFT, gurultulu sinyaldeki asil frekansi
+bulmak ve gurultuyu filtrelemek icin kullanilir.

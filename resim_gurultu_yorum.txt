@@ -1,0 +1,50 @@
+RESME GAUSS VE SALT & PEPPER GURULTU EKLEME - YORUM
+
+Resim gri tonlamaya cevrildi, 128 x 128 boyutuna getirildi ve piksel
+degerleri 0-1 araligina olceklendi. Iki gurultu fonksiyonu yazildi:
+
+Gauss gurultu (gauss_gurultu_ekle):
+Her piksele ortalamasi 0, standart sapmasi "kuvvet" parametresi olan
+rastgele bir deger eklenir. Sonuc 0-1 araligina kirpilir. Kuvvet
+arttikca gurultu da artar. Bu calismada kuvvet = 0.1 kullanildi.
+
+Salt & Pepper gurultu (salt_and_pepper_ekle):
+Piksellerin "oran" parametresi kadari rastgele secilir. Secilenlerin
+yarisi siyah (0, pepper), yarisi beyaz (1, salt) yapilir. Diger
+piksellere dokunulmaz. Bu calismada oran = 0.05 kullanildi, yani
+piksellerin %5'i bozuldu.
+
+Gorunus:
+Gauss gurultu resmin tamamina yayilmis ince bir karincalanma olusturdu;
+butun pikseller biraz degisti. Salt & Pepper gurultude ise resmin buyuk
+kismi bozulmadan kaldi, sadece rastgele yerlerde siyah ve beyaz noktalar
+olustu.
+
+Harmonik matrislerinin karsilastirilmasi:
+Uc harmonik matrisi ayni parlaklik araliginda gosterildi. Orijinal
+resimde enerji merkezde (dusuk frekanslarda) toplaniyor, kenarlara dogru
+gidildikce harmonikler hizla zayifliyor ve kenarlar karanlik gorunuyor.
+Gurultulu resimlerde ise merkezdeki yapi korunmus olsa da harmonik
+matrisinin her yeri belirgin sekilde aydinlanmis.
+
+Bunun sebebi gurultunun rastgele olmasi: komsu pikseller arasinda ani
+ve duzensiz degisimler yarattigi icin butun frekanslara, ozellikle de
+yuksek frekanslara esit sekilde yayiliyor. Bunu olcmek icin merkezden
+10 birimden daha uzaktaki (yuksek frekansli) harmoniklerin toplam
+enerjideki payi hesaplandi:
+
+    Orijinal resim  : %2.4
+    Gauss gurultu   : %6.1
+    Salt & Pepper   : %7.6
+
+Iki gurultu da yuksek frekanslardaki enerjiyi 2.5-3 kat artirdi.
+Salt & Pepper gurultu daha az pikseli bozmasina ragmen yuksek frekans
+enerjisini daha cok artirdi, cunku bozulan pikseller tamamen siyah veya
+beyaz oldugu icin cevreleriyle cok buyuk parlaklik farki (keskin
+sicramalar) olusturuyor.
+
+Sonuc:
+Gurultu, resmin harmonik matrisinde ozellikle yuksek frekanslarda kendini
+gosteriyor. Resmin asil bilgisi ise dusuk frekanslarda (merkezde)
+kaliyor. Bu nedenle yuksek frekanslari zayiflatan filtreler (alcak
+geciren filtreler) gurultuyu azaltmak icin kullanilabilir.

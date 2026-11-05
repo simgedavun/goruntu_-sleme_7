@@ -1,0 +1,38 @@
+GAUSS VE MEDYAN FILTRE SONUCLARININ YORUMU
+
+Gurultulu sinyal, genligi 2 olan sinuse 0.5 oraninda rastgele gurultu
+eklenerek elde edildi. Bu sinyal 5 elemanli pencere ile once Gauss
+(sigma = 1), sonra Medyan filtreden gecirildi. Sonuclari karsilastirmak
+icin her birinin orijinal sinyale gore ortalama kare hatasi (MSE)
+hesaplandi:
+
+    Gurultulu sinyal : 0.357
+    Gauss filtre     : 0.108
+    Medyan filtre    : 0.173
+
+Iki filtre de gurultuyu belirgin sekilde azaltti ve sinyalin sinus
+seklini geri getirdi.
+
+Gauss Filtre:
+Gauss filtre her elemani, komsularinin agirlikli ortalamasi ile
+degistirir. Ortadaki elemana en buyuk agirlik verilir, uzaklastikca
+agirlik azalir. Ortalama alindigi icin rastgele pozitif ve negatif
+gurultuler birbirini goturur. Sonucta sinyal yumusak bir egriye donustu
+ve hata yaklasik 3 kat azaldi. Bu veride en iyi sonucu Gauss filtre
+verdi. Dezavantaji, tepe noktalarini biraz basiklastirmasi ve keskin
+gecisleri yumusatmasidir.
+
+Medyan Filtre:
+Medyan filtre her elemani, penceredeki degerlerin ortanca degeri ile
+degistirir. Asiri buyuk veya kucuk degerleri tamamen yok sayar. Sonucta
+gurultu azaldi, ancak sinyalde yer yer duz basamaklar olustu. Bunun
+sebebi ortanca degerin dogrudan penceredeki elemanlardan biri olmasidir.
+Bu veride hatasi Gauss filtreden biraz daha yuksek cikti.
+
+Sonuc:
+Burada eklenen gurultu, her elemana kucuk rastgele degerler eklenerek
+olusturuldugu icin ortalama alan Gauss filtre daha basarili oldu. Medyan
+filtre ise tuz-biber gurultusu gibi, bazi elemanlarin cok buyuk sicrama
+yaptigi gurultulerde daha basarilidir, cunku bu asiri degerleri tamamen
+atar ve kenarlari korur. Bu nedenle hangi filtrenin secilecegi,
+gurultunun turune baglidir.
